@@ -26,6 +26,31 @@
         .btn-gold:hover { background: var(--gold-dark); color: #fff; box-shadow: 0 0 12px rgba(212,178,111,0.4); }
 
         .char-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 25px; justify-items: center; }
+        
+        .grid-divider {
+            grid-column: 1 / -1;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: var(--gold-light);
+            font-family: var(--font-serif);
+            letter-spacing: 4px;
+            font-size: 15px;
+            font-weight: 700;
+            margin: 35px 0 15px 0;
+            width: 100%;
+            user-select: none;
+        }
+        .grid-divider::before, .grid-divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--gold-dark);
+            box-shadow: 0 0 8px rgba(212, 178, 111, 0.5);
+        }
+        .grid-divider::before { margin-right: 25px; }
+        .grid-divider::after { margin-left: 25px; }
+        .char-grid > .grid-divider:first-child { margin-top: 0; }
+
         .char-card { width: 100%; max-width: 220px; aspect-ratio: 2 / 3; background: #111014; border: 2px solid var(--gold-dark); border-radius: 12px; cursor: pointer; transition: var(--transition); position: relative; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.6); }
         .char-card:hover { border-color: var(--gold-light); box-shadow: 0 15px 30px rgba(212,178,111,0.3); transform: translateY(-8px); }
         .char-card img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; z-index: 1; transition: var(--transition); }
@@ -51,9 +76,8 @@
             display: flex; justify-content: space-between; align-items: center; 
             border-bottom: 2px solid var(--gold-dark); padding-bottom: 15px; 
             position: sticky; top: 0px; z-index: 100; 
-            background: #1a191e; /* 틈새가 절대 투명해지지 않도록 솔리드 배경 처리 */
-            padding-top: 25px; /* 글씨가 브라우저 천장에 너무 붙지 않게 시각적 여백 확보 */
-            margin-top: -25px; /* 늘어난 패딩만큼 마진을 빼서 원본 레이아웃 유지 */
+            background: #1a191e; 
+            padding-top: 25px; margin-top: -25px; 
             box-shadow: 0 15px 15px -15px rgba(0,0,0,0.9);
         }
         
@@ -156,8 +180,23 @@
                 
                 if (data.success && data.list.length > 0) {
                     gridContainer.innerHTML = '';
+                    
+                    let renderedNpcHeader = false;
+                    let renderedPlayerHeader = false;
+                    
                     data.list.forEach(char => {
                         characterCache[char.name] = char;
+                        
+                        if (char.isNpc && !renderedNpcHeader) {
+                            gridContainer.innerHTML += `<div class="grid-divider">NPC</div>`;
+                            renderedNpcHeader = true;
+                        }
+                        
+                        if (!char.isNpc && !renderedPlayerHeader) {
+                            gridContainer.innerHTML += `<div class="grid-divider">PLAYERS</div>`;
+                            renderedPlayerHeader = true;
+                        }
+                        
                         const directImg = getDirectImgUrl(char.img);
                         const imgTag = directImg ? `<img src="${directImg}" alt="${char.name}">` : `<div class="no-img-placeholder">NO IMAGE</div>`;
                         
